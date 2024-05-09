@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ghost
+  namespace: ghost-assignment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ghost
+  template:
+    metadata:
+      labels:
+        app: ghost
+    spec:
+      containers:
+      - name: ghost
+        image: yormengh/ghost:latest
+        ports:
+        - containerPort: 2368
+        env:
+        - name: database__client
+          value: mysql
+        - name: database__connection__host
+          value: mysql-service
+        - name: database__connection__user
+          value: root
+        - name: database__connection__password
+          value: example
+        - name: database__connection__database
+          value: ghost
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ghost
+  namespace: ghost-assignment
+spec:
+  selector:
+    app: ghost
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 2368
